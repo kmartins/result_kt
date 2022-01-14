@@ -1,0 +1,10 @@
+name: result_kt
+description: Encapsulate a value as a success or an error as a failure using Result and execute a function using runCatching that returns a Result, both similar to those found in Kotlin.
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.13.0 <3.0.0"
+
+dev_dependencies:
+  test: ^1.19.2
+  very_good_analysis: ^2.4.0
