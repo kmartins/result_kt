@@ -1,4 +1,3 @@
-// ignore_for_file: prefer_const_constructors
 import 'package:result_kt/src/result.dart';
 import 'package:test/test.dart';
 
@@ -317,14 +316,7 @@ void main() {
         final newResult = result.map(
           transform: (value) => value.length,
         );
-        expect(
-          newResult,
-          isA<Result<int>>().having(
-            (result) => result.getOrNull(),
-            'value',
-            'success o/'.length,
-          ),
-        );
+        expect(newResult, Result.success('success o/'.length));
       });
 
       test(
@@ -336,18 +328,7 @@ void main() {
         final newResult = result.map(
           transform: (value) => value.length,
         );
-
-        expect(
-          newResult,
-          isA<Result<int>>()
-              .having((result) => result.getOrNull(), 'value', isNull)
-              .having((result) => result.isFailure, 'failure', isTrue)
-              .having(
-                (result) => result.failureOrNull()?.error,
-                'failure value',
-                exception,
-              ),
-        );
+        expect(newResult, Result<int>.failure(exception));
       });
 
       test(
@@ -373,11 +354,7 @@ void main() {
         final newResult = result.mapCatching(
           transform: (value) => value.length,
         );
-        expect(
-          newResult,
-          isA<Result<int>>()
-              .having((result) => result.getOrNull(), 'value', 10),
-        );
+        expect(newResult, Result.success(10));
       });
 
       test(
@@ -390,17 +367,7 @@ void main() {
           transform: (value) => value.length,
         );
 
-        expect(
-          newResult,
-          isA<Result<int>>()
-              .having((result) => result.getOrNull(), 'value', isNull)
-              .having((result) => result.isFailure, 'failure', isTrue)
-              .having(
-                (result) => result.failureOrNull()?.error,
-                'failure value',
-                exception,
-              ),
-        );
+        expect(newResult, Result<int>.failure(exception));
       });
 
       test(
@@ -417,12 +384,15 @@ void main() {
         expect(
           newResult,
           isA<Result<int>>()
-              .having((result) => result.getOrNull(), 'value', isNull)
-              .having((result) => result.isFailure, 'failure', isTrue)
               .having(
                 (result) => result.failureOrNull()?.error,
                 'error',
                 isException,
+              )
+              .having(
+                (result) => result.failureOrNull()?.stackTrace,
+                'stackTrace',
+                isNotNull,
               ),
         );
       });
@@ -476,15 +446,10 @@ void main() {
           'when transforming the failure in success, '
           'then the result is the same Result with the value', () {
         final result = Result.success('success o/');
-        var called = 0;
         final newResult = result.recover(
-          transform: (_) {
-            called++;
-            return 'new success';
-          },
+          transform: (_) => 'new success',
         );
         expect(newResult, result);
-        expect(called, 0);
       });
 
       test(
@@ -497,11 +462,7 @@ void main() {
         final newResult = result.recover(
           transform: (_) => 'new success',
         );
-        expect(
-          newResult,
-          isA<Result<String>>()
-              .having((result) => result.getOrNull(), 'value', 'new success'),
-        );
+        expect(newResult, Result.success('new success'));
       });
 
       test(
@@ -525,15 +486,10 @@ void main() {
           'when transforming the failure in success, '
           'then the result is the same Result with the value', () {
         final result = Result.success('success o/');
-        var called = 0;
         final newResult = result.recoverCatching(
-          transform: (_) {
-            called++;
-            return 'new success';
-          },
+          transform: (_) => 'new success',
         );
         expect(newResult, result);
-        expect(called, 0);
       });
 
       test(
@@ -546,11 +502,7 @@ void main() {
         final newResult = result.recoverCatching(
           transform: (_) => 'new success',
         );
-        expect(
-          newResult,
-          isA<Result<String>>()
-              .having((result) => result.getOrNull(), 'value', 'new success'),
-        );
+        expect(newResult, Result.success('new success'));
       });
 
       test(
@@ -568,12 +520,15 @@ void main() {
         expect(
           newResult,
           isA<Result<String>>()
-              .having((result) => result.getOrNull(), 'value', isNull)
-              .having((result) => result.isFailure, 'failure', isTrue)
               .having(
                 (result) => result.failureOrNull()?.error,
                 'error',
                 isException,
+              )
+              .having(
+                (result) => result.failureOrNull()?.stackTrace,
+                'stackTrace',
+                isNotNull,
               ),
         );
       });
@@ -601,18 +556,7 @@ void main() {
           'when no exception occurs, '
           'then the is result is a success', () async {
         final result = runCatching(() => 1);
-        expect(
-          result,
-          isA<Result<int>>()
-              .having((result) => result.isSuccess, 'success', isTrue)
-              .having((result) => result.isFailure, 'failure', isFalse)
-              .having(
-                (result) => result.failureOrNull(),
-                'failure value',
-                isNull,
-              )
-              .having((result) => result.getOrNull(), 'value', 1),
-        );
+        expect(result, Result.success(1));
       });
 
       test(
@@ -624,14 +568,16 @@ void main() {
         expect(
           result,
           isA<Result<int>>()
-              .having((result) => result.isFailure, 'failure', isTrue)
-              .having((result) => result.isSuccess, 'success', isFalse)
               .having(
                 (result) => result.failureOrNull()?.error,
-                'failure value',
-                isA<Exception>(),
+                'error',
+                isException,
               )
-              .having((result) => result.getOrNull(), 'value', isNull),
+              .having(
+                (result) => result.failureOrNull()?.stackTrace,
+                'stackTrace',
+                isNotNull,
+              ),
         );
       });
 
@@ -647,14 +593,16 @@ void main() {
         expect(
           result,
           isA<Result<int>>()
-              .having((result) => result.isFailure, 'failure', isTrue)
-              .having((result) => result.isSuccess, 'success', isFalse)
               .having(
                 (result) => result.failureOrNull()?.error,
-                'failure value',
-                isA<Exception>(),
+                'error',
+                isException,
               )
-              .having((result) => result.getOrNull(), 'value', isNull),
+              .having(
+                (result) => result.failureOrNull()?.stackTrace,
+                'stackTrace',
+                isNotNull,
+              ),
         );
       });
 
