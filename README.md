@@ -153,8 +153,8 @@ This project is [MIT](https://opensource.org/licenses/MIT) licensed.
 [license_link]: https://opensource.org/licenses/MIT
 [codecov_badge]: https://codecov.io/gh/kmartins/result_kt/branch/main/graph/badge.svg
 [codecov_link]: https://codecov.io/gh/kmartins/result_kt
-[workflow_badge]: https://github.com/kmartins/result_kt/actions/workflows/build.yaml/badge.svg
-[workflow_link]: https://github.com/kmartins/result_kt/actions/workflows/build.yaml
+[workflow_badge]: https://github.com/kmartins/result_kt/actions/workflows/result_kt.yaml/badge.svg
+[workflow_link]: https://github.com/kmartins/result_kt/actions/workflows/result_kt.yaml
 [package]: https://pub.dev/packages/result_kt
 [kotlin_result]: https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-result/
 [resultk]: https://pub.dev/packages/resultk
