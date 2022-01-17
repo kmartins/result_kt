@@ -1,6 +1,6 @@
 # Result Kt
 
-[![pub][package]][package_link]
+[![pub][package_badge]][package_link]
 [![License: MIT][license_badge]][license_link]
 [![result_kt][workflow_badge]][workflow_link]
 [![codecov][codecov_badge]][codecov_link]
@@ -147,8 +147,8 @@ You liked this package? Then give it a ⭐️. If you want to help then:
 Copyright © 2022 [Kauê Martins](https://github.com/kmartins).<br />
 This project is [MIT](https://opensource.org/licenses/MIT) licensed.
 
-[package_badge]: https://img.shields.io/pub/v/result_kt_crashlytics.svg
-[package_link]: https://pub.dev/packages/result_kt_crashlytics
+[package_badge]: https://img.shields.io/pub/v/result_kt.svg
+[package_link]: https://pub.dev/packages/result_kt
 [license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [license_link]: https://opensource.org/licenses/MIT
 [codecov_badge]: https://codecov.io/gh/kmartins/result_kt/branch/main/graph/badge.svg
