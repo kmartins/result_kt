@@ -11,6 +11,8 @@ A Dart package with the type `Result` and the `runCatching` function that are si
 
 I needed something as is done in `Kotlin` and did not want to add other functions that not are used in my projects.
 
+There is another package similar, [result][resultk], however, it was discontinued.
+
 ## Usage
 
 Add it in your `pubspec.yaml`:
@@ -155,6 +157,7 @@ This project is [MIT](https://opensource.org/licenses/MIT) licensed.
 [workflow_link]: https://github.com/kmartins/result_kt/actions/workflows/build.yaml
 [package]: https://pub.dev/packages/result_kt
 [kotlin_result]: https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-result/
+[resultk]: https://pub.dev/packages/resultk
 [api_documentation]: https://pub.dev/documentation/result_kt/latest/
 [dartz]: https://pub.dev/packages/dartz
 [fpdart]: https://pub.dev/packages/fpdart
