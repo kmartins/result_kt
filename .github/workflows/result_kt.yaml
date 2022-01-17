@@ -1,0 +1,59 @@
+name: Result Kt
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/result_kt.yaml"
+      - "example/**"
+      - "lib/**"
+      - "scripts/**"
+      - "test/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dart-lang/setup-dart@v1
+
+      - name: Install Dependencies
+        run: |
+          dart pub get
+          dart pub global activate coverage
+
+      - name: Format
+        run: dart format --set-exit-if-changed .
+
+      - name: Analyze
+        run: dart analyze --fatal-infos --fatal-warnings .
+
+      - name: Run Tests
+        run: scripts/coverage.sh
+
+      - name: Check Code Coverage
+        uses: VeryGoodOpenSource/very_good_coverage@v1.2.0
+        with:
+          path: coverage/lcov.info
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          fail_ci_if_error: true
+
+  pana:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dart-lang/setup-dart@v1
+
+      - name: Install Dependencies
+        run: |
+          pub get
+          pub global activate pana
+
+      - name: Verify Pub Score
+        run: scripts/verify_pub_score.sh
