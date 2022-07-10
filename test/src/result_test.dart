@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:result_kt/src/result.dart';
 import 'package:test/test.dart';
 
@@ -622,6 +624,99 @@ void main() {
                 .having((exception) => exception, 'exception', 'exception'),
           ),
         );
+      });
+    });
+
+    group('Stream', () {
+      group('toResult', () {
+        test(
+            'given a stream, '
+            'when adding a value, '
+            'then the is result is the value converting in Result.success', () {
+          final streamController = StreamController<int>();
+          final resultStream = streamController.stream.toResult();
+          expect(
+            resultStream,
+            emitsInOrder(
+              <Result<int>>[
+                Result.success(0),
+                Result.success(1),
+                Result.success(2)
+              ],
+            ),
+          );
+          streamController
+            ..add(0)
+            ..add(1)
+            ..add(2);
+        });
+
+        test(
+            'given a stream, '
+            'when adding an error and test is null, '
+            'then the is result is the error converting in Result.failure', () {
+          final stackTrace = StackTrace.fromString('error');
+          final streamController = StreamController<int>();
+          final resultStream = streamController.stream.toResult();
+          expect(
+            resultStream,
+            emitsInOrder(
+              <Result<int>>[
+                Result.failure(0),
+                Result.failure(1, stackTrace),
+                Result.failure(2)
+              ],
+            ),
+          );
+          streamController
+            ..addError(0)
+            ..addError(1, stackTrace)
+            ..addError(2);
+        });
+
+        test(
+            'given a stream, '
+            'when adding an error and test is true, '
+            'then the is result is the error converting in Result.failure', () {
+          final stackTrace = StackTrace.fromString('error');
+          final streamController = StreamController<int>();
+          final resultStream = streamController.stream.toResult(
+            test: (error) => error is int,
+          );
+          expect(
+            resultStream,
+            emitsInOrder(
+              <Result<int>>[
+                Result.failure(0),
+                Result.failure(1, stackTrace),
+                Result.failure(2)
+              ],
+            ),
+          );
+          streamController
+            ..addError(0)
+            ..addError(1, stackTrace)
+            ..addError(2);
+        });
+
+        test(
+            'given a stream, '
+            'when adding an error and test is false, '
+            'then the result is an unhandled exception', () {
+          Object? error;
+          final streamController = StreamController<int>(sync: true);
+          final resultStream = streamController.stream.toResult(
+            test: (_) => false,
+          );
+          runZonedGuarded(
+            () {
+              resultStream.listen((_) {});
+              streamController.addError(Exception());
+            },
+            (err, stack) => error = err,
+          );
+          expect(error, isA<Exception>());
+        });
       });
     });
   });
