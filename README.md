@@ -5,7 +5,9 @@
 [![result_kt][workflow_badge]][workflow_link]
 [![codecov][codecov_badge]][codecov_link]
 
-A Dart package with the type `Result` and the `runCatching` function that are similar to those found in [Kotlin][kotlin_result]. 
+A Dart package with the type `Result` and the `runCatching` function that are similar to those found in [Kotlin][kotlin_result].
+
+You can use it with the `Stream` too 🙌
 
 ## Why?
 
