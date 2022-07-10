@@ -110,6 +110,28 @@ result
     );
 ```
 
+### Stream
+
+Transform the stream value into a result:
+
+```dart
+final streamController = StreamController<int>();
+final resultStream = streamController.stream.toResult();
+resultStream.listen(print); // Success(0)
+streamController.add(0);
+```
+
+**Like the `runCatching` you can be passed what `error` type you want transforming, if the same, then return the `Result`, otherwise, then the `error` and `StackTrace` are added using the `EventSink.addError`.**
+
+```dart
+final streamController = StreamController<int>();
+final resultStream = streamController.stream.toResult(
+    test: (error) => error is Exception,
+);
+resultStream.listen(print); // Failure(error: Exception, stackTrace: null)
+streamController.addError(Exception());
+```
+
 ## Other similar packages
 
 The [dartz][dartz] package offers many functional programming helpers, including the Either type, which is similar to Result, with the difference being that it represents any two types of values.
