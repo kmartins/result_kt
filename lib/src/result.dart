@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:result_kt/src/failure.dart';
 
 /// [runCatching] function
@@ -257,5 +259,39 @@ Result<R> runCatching<R>(
       return Result.failure(error, stackTrace);
     }
     rethrow;
+  }
+}
+
+/// Functions for using [Stream] with the [Result].
+extension StreamExtension<T> on Stream<T> {
+  /// Encapsulates a `value` emitted in a [Result],
+  /// if successful then the `value` is encapsulated as a `success`
+  /// in [Result] using the [EventSink.add],
+  /// if `error` then [test] is called with the `error value`,
+  /// if [test] is `true`, the `error` and the [StackTrace] are encapsulated
+  /// as a `failure` in [Result] using [EventSink.add], otherwise,
+  /// if [test] is `false`, then the `error` and [StackTrace]
+  /// are added using [EventSink.addError].
+  ///
+  /// Uses the `test` function to catch the specific errors,
+  /// it's the same that the [runCatching] function.
+  /// If `test` is omitted, it defaults to a function
+  /// that always returns `true`.
+  Stream<Result<T>> toResult({
+    bool Function(Object error)? test,
+  }) {
+    return transform<Result<T>>(
+      StreamTransformer<T, Result<T>>.fromHandlers(
+        handleData: (data, sink) => sink.add(Result<T>.success(data)),
+        handleError: (error, stackTrace, sink) {
+          if (test?.call(error) ?? true) {
+            final stack = stackTrace.toString().isEmpty ? null : stackTrace;
+            sink.add(Result<T>.failure(error, stack));
+          } else {
+            sink.addError(error, stackTrace);
+          }
+        },
+      ),
+    );
   }
 }
