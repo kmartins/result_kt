@@ -4,28 +4,37 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "**.yaml"
-      - "example/**"
-      - "lib/**"
-      - "scripts/**"
-      - "test/**"
   pull_request:
     branches:
       - main
-    paths:
-      - "**.yaml"
-      - "example/**"
-      - "lib/**"
-      - "scripts/**"
-      - "test/**"
 
 jobs:
+  pr:
+    name: Validate PR title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            fix
+            feat
+            docs
+            style
+            refactor
+            perf
+            tests
+            build
+            ci
+            revert
+            release
+
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: dart-lang/setup-dart@v1
 
       - name: Install Dependencies
@@ -40,15 +49,17 @@ jobs:
         run: dart analyze --fatal-infos --fatal-warnings .
 
       - name: Run Tests
-        run: scripts/coverage.sh
+        run: |
+          dart pub global activate coverage
+          scripts/coverage.sh
 
       - name: Check Code Coverage
-        uses: VeryGoodOpenSource/very_good_coverage@v1.2.0
+        uses: VeryGoodOpenSource/very_good_coverage@v1
         with:
           path: coverage/lcov.info
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           fail_ci_if_error: true
 
@@ -56,13 +67,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: dart-lang/setup-dart@v1
 
       - name: Install Dependencies
         run: |
-          pub get
-          pub global activate pana
+          dart pub get
+          dart pub global activate pana
 
       - name: Verify Pub Score
         run: scripts/verify_pub_score.sh
