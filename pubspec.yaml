@@ -1,6 +1,6 @@
 name: result_kt
-description: Encapsulate a value as a success or an error as a failure using Result and execute a function using runCatching that returns a Result, both similar to those found in Kotlin.
-version: 1.0.0
+description: Encapsulate a value as a success or an error as a failure using Result, execute a function using runCatching that returns a Result, and transform the Stream value into a Result.
+version: 1.1.0
 homepage: https://github.com/kmartins/result_kt
 
 environment:
