@@ -4,21 +4,9 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "**.yaml"
-      - "example/**"
-      - "lib/**"
-      - "scripts/**"
-      - "test/**"
   pull_request:
     branches:
       - main
-    paths:
-      - "**.yaml"
-      - "example/**"
-      - "lib/**"
-      - "scripts/**"
-      - "test/**"
 
 jobs:
   build:
@@ -40,15 +28,17 @@ jobs:
         run: dart analyze --fatal-infos --fatal-warnings .
 
       - name: Run Tests
-        run: scripts/coverage.sh
+        run: |
+          dart pub global activate coverage
+          scripts/coverage.sh
 
       - name: Check Code Coverage
-        uses: VeryGoodOpenSource/very_good_coverage@v1.2.0
+        uses: VeryGoodOpenSource/very_good_coverage@v1
         with:
           path: coverage/lcov.info
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           fail_ci_if_error: true
 
@@ -61,8 +51,8 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pub get
-          pub global activate pana
+          dart pub get
+          dart pub global activate pana
 
       - name: Verify Pub Score
         run: scripts/verify_pub_score.sh
