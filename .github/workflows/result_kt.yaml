@@ -9,6 +9,27 @@ on:
       - main
 
 jobs:
+  pr:
+    name: Validate PR title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            fix
+            feat
+            docs
+            style
+            refactor
+            perf
+            tests
+            build
+            ci
+            revert
+            release
+
   build:
     runs-on: ubuntu-latest
 
