@@ -7,4 +7,4 @@ on:
 
 jobs:
   verify-semantic-pull-request:
-    uses: kmartins/workflows/.github/workflows/semantic_pull_request.yaml@semantic_pr-v1
+    uses: kmartins/workflows/.github/workflows/semantic_pull_request.yaml@semantic_pr-v1.0.0
