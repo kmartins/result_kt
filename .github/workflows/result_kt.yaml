@@ -5,54 +5,10 @@ on:
     branches:
       - main
   pull_request:
-    branches:
-      - main
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dart-lang/setup-dart@v1
-
-      - name: Install Dependencies
-        run: |
-          dart pub get
-          dart pub global activate coverage
-
-      - name: Format
-        run: dart format --set-exit-if-changed .
-
-      - name: Analyze
-        run: dart analyze --fatal-infos --fatal-warnings .
-
-      - name: Run Tests
-        run: |
-          dart pub global activate coverage
-          scripts/coverage.sh
-
-      - name: Check Code Coverage
-        uses: VeryGoodOpenSource/very_good_coverage@v1
-        with:
-          path: coverage/lcov.info
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          fail_ci_if_error: true
+    uses: kmartins/workflows/.github/workflows/dart_package.yaml@dart_package-v1.0.0
 
   pana:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dart-lang/setup-dart@v1
-
-      - name: Install Dependencies
-        run: |
-          dart pub get
-          dart pub global activate pana
-
-      - name: Verify Pub Score
-        run: scripts/verify_pub_score.sh
+    uses: kmartins/workflows/.github/workflows/pana.yaml@pana-v1.0.2
