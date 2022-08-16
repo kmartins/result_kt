@@ -11,4 +11,4 @@ jobs:
     uses: kmartins/workflows/.github/workflows/dart_package.yaml@dart_package-v1.0.0
 
   pana:
-    uses: kmartins/workflows/.github/workflows/pana.yaml@pana-v1.0.0
+    uses: kmartins/workflows/.github/workflows/pana.yaml@pana-v1.0.1
