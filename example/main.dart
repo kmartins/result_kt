@@ -9,7 +9,7 @@ void main() {
   final result = runCatching(() => validadeEmailAddress(email));
   result
       .onSuccess(action: print)
-      .onFailure(action: (value) => print(value.error.toString()));
+      .onFailure(action: (value) => print(value.error));
 }
 
 String validadeEmailAddress(String email) {

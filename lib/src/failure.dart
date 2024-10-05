@@ -6,7 +6,7 @@
 /// Failure(error: Exception(), stackTrace: stackTrace);
 /// ```
 /// {@endtemplate}
-class Failure {
+final class Failure {
   /// {@macro failure}
   Failure({
     required this.error,
