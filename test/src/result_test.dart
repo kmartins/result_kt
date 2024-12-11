@@ -641,7 +641,7 @@ void main() {
               <Result<int>>[
                 Result.success(0),
                 Result.success(1),
-                Result.success(2)
+                Result.success(2),
               ],
             ),
           );
@@ -664,7 +664,7 @@ void main() {
               <Result<int>>[
                 Result.failure(0),
                 Result.failure(1, stackTrace),
-                Result.failure(2)
+                Result.failure(2),
               ],
             ),
           );
@@ -689,7 +689,7 @@ void main() {
               <Result<int>>[
                 Result.failure(0),
                 Result.failure(1, stackTrace),
-                Result.failure(2)
+                Result.failure(2),
               ],
             ),
           );

@@ -22,7 +22,7 @@ typedef Block<R> = R Function();
 ///  Result<int>.failure('failure :/', stackTrace);
 /// ```
 /// {@endtemplate}
-class Result<T> {
+final class Result<T> {
   /// {@macro result}
   const Result._(this._value);
 
