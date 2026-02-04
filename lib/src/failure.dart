@@ -1,3 +1,5 @@
+import 'package:meta/meta.dart';
+
 /// {@template failure}
 /// Class that encapsulates `error`[Object] and [StackTrace].
 /// The `stackTrace` is optional.
@@ -6,9 +8,10 @@
 /// Failure(error: Exception(), stackTrace: stackTrace);
 /// ```
 /// {@endtemplate}
+@immutable
 final class Failure {
   /// {@macro failure}
-  Failure({
+  const Failure({
     required this.error,
     this.stackTrace,
   });
@@ -23,7 +26,6 @@ final class Failure {
   String toString() => 'Failure(error: $error, stackTrace: $stackTrace)';
 
   @override
-  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
@@ -33,6 +35,5 @@ final class Failure {
   }
 
   @override
-  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode => error.hashCode ^ stackTrace.hashCode;
 }

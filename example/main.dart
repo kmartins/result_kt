@@ -1,4 +1,6 @@
+// Print is allowed in example.
 // ignore_for_file: avoid_print
+
 import 'dart:io';
 
 import 'package:result_kt/result_kt.dart';
@@ -6,10 +8,9 @@ import 'package:result_kt/result_kt.dart';
 void main() {
   stdout.writeln('Type an email:');
   final email = stdin.readLineSync()!;
-  final result = runCatching(() => validadeEmailAddress(email));
-  result
-      .onSuccess(action: print)
-      .onFailure(action: (value) => print(value.error));
+  runCatching(() => validadeEmailAddress(email))
+    ..onSuccess(action: print)
+    ..onFailure(action: (value) => print(value.error));
 }
 
 String validadeEmailAddress(String email) {

@@ -251,10 +251,9 @@ void main() {
           'without to change the original Result', () {
         final result = Result.success('success o/');
         String? value;
-        final sameResult = result.onSuccess(
+        result.onSuccess(
           action: (result) => value = result,
         );
-        expect(sameResult, result);
         expect(value, 'success o/');
       });
 
@@ -266,10 +265,9 @@ void main() {
         const exception = 'failure :/';
         final result = Result<int>.failure(exception);
         var value = 0;
-        final sameResult = result.onSuccess(
+        result.onSuccess(
           action: (result) => value = result,
         );
-        expect(sameResult, result);
         expect(value, 0);
       });
 
@@ -283,13 +281,12 @@ void main() {
         final result = Result<int>.failure(exception, stackTrace);
         String? value;
         String? stack;
-        final sameResult = result.onFailure(
+        result.onFailure(
           action: (failure) {
             value = failure.error as String;
             stack = failure.stackTrace.toString();
           },
         );
-        expect(sameResult, result);
         expect(value, 'failure :/');
         expect(stack, 'stack');
       });
@@ -301,10 +298,9 @@ void main() {
           'without to change the original Result', () {
         final result = Result.success('success o/');
         String? value;
-        final sameResult = result.onFailure(
+        result.onFailure(
           action: (failure) => value = failure.error as String,
         );
-        expect(sameResult, result);
         expect(value, isNull);
       });
     });
@@ -615,6 +611,7 @@ void main() {
           'then the result is to throw this exception', () {
         expect(
           () => runCatching<int>(
+            // Test throwing string
             // ignore: only_throw_errors
             () => throw 'exception',
             test: (error) => error is Exception,

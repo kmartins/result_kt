@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
 import 'package:result_kt/src/failure.dart';
 
 /// [runCatching] function
@@ -22,13 +23,13 @@ typedef Block<R> = R Function();
 ///  Result<int>.failure('failure :/', stackTrace);
 /// ```
 /// {@endtemplate}
-final class Result<T> {
+sealed class Result<T> {
   /// {@macro result}
-  const Result._(this._value);
+  const Result._();
 
   /// Returns an instance that encapsulated
   /// the given [value] as successful value.
-  factory Result.success(T value) => Result._(value);
+  factory Result.success(T value) = Success<T>;
 
   /// Returns an instance that encapsulated the
   /// [Error] and [StackTrace] as [Failure].
@@ -36,46 +37,54 @@ final class Result<T> {
     Object error, [
     StackTrace? stackTrace,
   ]) =>
-      Result._(
+      FailureResult(
         Failure(error: error, stackTrace: stackTrace),
       );
 
-  /// Represents the value if success [Result.success]
-  /// or [Failure] if failure [Result.failure].
-  final Object? _value;
-
   /// Returns `true` if this instance represents a successful outcome.
   /// In this case [isFailure] returns `false`.
-  bool get isSuccess => !isFailure;
+  bool get isSuccess => switch (this) {
+        Success() => true,
+        FailureResult() => false,
+      };
 
   /// Returns `true` if this instance represents a failed outcome.
   /// In this case [isSuccess] returns `false`.
-  bool get isFailure => _value is Failure;
+  bool get isFailure => !isSuccess;
 
   /// Returns the encapsulated value if this instance represents
   /// [success][Result.isSuccess] or `null`
   /// if it is [failure][Result.isFailure].
-  T? getOrNull() => isFailure ? null : _value as T;
+  T? getOrNull() => switch (this) {
+        Success(value: final value) => value,
+        FailureResult() => null,
+      };
 
   /// Returns the encapsulated [Failure] exception if
   /// this instance represents [failure][Result.isFailure] or `null`
   /// if it is [success][Result.isSuccess].
-  Failure? failureOrNull() => isFailure ? _value! as Failure : null;
+  Failure? failureOrNull() => switch (this) {
+        Success() => null,
+        FailureResult(failure: final failure) => failure,
+      };
 
   /// Returns the encapsulated value if this instance represents
   /// [success][Result.isSuccess] or throws the encapsulated in [Failure]
   /// exception if it is [failure][Result.isFailure].
-  T? getOrThrow() =>
-      // ignore: only_throw_errors
-      isFailure ? throw (_value! as Failure).error : _value as T;
+  T? getOrThrow() => switch (this) {
+        Success(value: final value) => value,
+        // Result can hold any Object as error.
+        // ignore: only_throw_errors
+        FailureResult(failure: final failure) => throw failure.error,
+      };
 
   /// Returns the encapsulated value if this instance
   /// represents [success][Result.isSuccess] or the
   /// [defaultValue] if it is [failure][Result.isFailure].
-  T getOrDefault(T defaultValue) {
-    if (isFailure) return defaultValue;
-    return _value as T;
-  }
+  T getOrDefault(T defaultValue) => switch (this) {
+        Success(value: final value) => value,
+        FailureResult() => defaultValue,
+      };
 
   /// Returns the encapsulated value if this
   /// instance represents [success][Result.isSuccess] or the
@@ -86,29 +95,28 @@ final class Result<T> {
   /// thrown by [onFailure] function.
   T getOrElse({
     required T Function(Failure failure) onFailure,
-  }) {
-    if (isFailure) return onFailure(_value! as Failure);
-    return _value as T;
-  }
+  }) =>
+      switch (this) {
+        Success(value: final value) => value,
+        FailureResult(failure: final failure) => onFailure(failure),
+      };
 
   /// Performs the given [action] on the encapsulated value
   /// if this instance represents [success][Result.isSuccess].
-  /// Returns the original [Result] unchanged.
-  Result<T> onSuccess({required void Function(T value) action}) =>
-      this.._actionIfSuccess(action: action);
+  void onSuccess({required void Function(T value) action}) {
+    if (this case Success(value: final value)) {
+      action(value);
+    }
+  }
 
   /// Performs the given [action] on the encapsulated
   /// `error` and `stackTrace` in [Failure] if this
   /// instance represents [failure][Result.isFailure]
-  /// Returns the original [Result] unchanged.
-  Result<T> onFailure({required void Function(Failure failure) action}) =>
-      this.._actionIfFailure(action: action);
-
-  void _actionIfFailure({required void Function(Failure failure) action}) =>
-      isFailure ? action(_value! as Failure) : null;
-
-  void _actionIfSuccess({required void Function(T value) action}) =>
-      isSuccess ? action(_value as T) : null;
+  void onFailure({required void Function(Failure failure) action}) {
+    if (this case FailureResult(failure: final failure)) {
+      action(failure);
+    }
+  }
 
   /// Returns the result of [onSuccess] for the encapsulated
   /// value if this instance represents [success][Result.isSuccess]
@@ -118,13 +126,11 @@ final class Result<T> {
   R fold<R>({
     required R Function(T value) onSuccess,
     required R Function(Failure failure) onFailure,
-  }) {
-    final failure = failureOrNull();
-    if (failure == null) {
-      return onSuccess(_value as T);
-    }
-    return onFailure(failure);
-  }
+  }) =>
+      switch (this) {
+        Success(value: final value) => onSuccess(value),
+        FailureResult(failure: final failure) => onFailure(failure),
+      };
 
   /// Returns the encapsulated result of the given [transform] functions
   /// applied to the encapsulated value if this instance
@@ -137,12 +143,11 @@ final class Result<T> {
   /// See [mapCatching] for an alternative that encapsulates erros.
   Result<R> map<R>({
     required R Function(T value) transform,
-  }) {
-    if (isSuccess) {
-      return Result.success(transform(_value as T));
-    }
-    return Result._(_value);
-  }
+  }) =>
+      switch (this) {
+        Success(value: final value) => Result.success(transform(value)),
+        FailureResult(failure: final failure) => FailureResult<R>(failure),
+      };
 
   /// Returns the encapsulated result of the given [transform]
   /// function applied to the encapsulated value
@@ -166,12 +171,12 @@ final class Result<T> {
   Result<R> mapCatching<R>({
     required R Function(T value) transform,
     bool Function(Object error)? test,
-  }) {
-    if (isSuccess) {
-      return runCatching(() => transform(_value as T), test: test);
-    }
-    return Result._(_value);
-  }
+  }) =>
+      switch (this) {
+        Success(value: final value) =>
+          runCatching(() => transform(value), test: test),
+        FailureResult(failure: final failure) => FailureResult<R>(failure),
+      };
 
   /// Returns the encapsulated result of the given [transform] function applied
   /// to the encapsulated `error` and `stackTrace` in [Failure]
@@ -183,13 +188,12 @@ final class Result<T> {
   /// See [recoverCatching] for an alternative that encapsulates erros.
   Result<T> recover({
     required T Function(Failure failure) transform,
-  }) {
-    final failure = failureOrNull();
-    if (failure == null) {
-      return this;
-    }
-    return Result.success(transform(failure));
-  }
+  }) =>
+      switch (this) {
+        Success() => this,
+        FailureResult(failure: final failure) =>
+          Result.success(transform(failure)),
+      };
 
   /// Returns the encapsulated result of the given [transform] function applied
   /// to the encapsulated `error` and `stackTrace` in [Failure]
@@ -211,28 +215,58 @@ final class Result<T> {
   Result<T> recoverCatching({
     required T Function(Failure failure) transform,
     bool Function(Object error)? test,
-  }) {
-    final failure = failureOrNull();
-    if (failure == null) {
-      return this;
-    }
-    return runCatching(() => transform(failure), test: test);
-  }
+  }) =>
+      switch (this) {
+        Success() => this,
+        FailureResult(failure: final failure) =>
+          runCatching(() => transform(failure), test: test),
+      };
+}
+
+/// A successful [Result] with a value of type [T].
+@immutable
+final class Success<T> extends Result<T> {
+  /// Creates a success result with the given [value].
+  const Success(this.value) : super._();
+
+  /// The successful value.
+  final T value;
 
   @override
-  String toString() => isFailure ? _value.toString() : 'Success($_value)';
+  String toString() => 'Success($value)';
 
   @override
-  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Result<T> && other._value == _value;
+    return other is Success<T> && other.value == value;
   }
 
   @override
-  // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => _value.hashCode;
+  int get hashCode => value.hashCode;
+}
+
+/// A failed [Result] with a [Failure].
+@immutable
+final class FailureResult<T> extends Result<T> {
+  /// Creates a failure result with the given [failure].
+  const FailureResult(this.failure) : super._();
+
+  /// The failure details.
+  final Failure failure;
+
+  @override
+  String toString() => failure.toString();
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is FailureResult<T> && other.failure == failure;
+  }
+
+  @override
+  int get hashCode => failure.hashCode;
 }
 
 /// Calls the specified function [block] and returns
