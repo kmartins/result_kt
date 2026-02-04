@@ -8,8 +8,8 @@ void main() {
         'when compared with other identical Failure, '
         'then the result is true', () {
       final stackTrace = StackTrace.fromString('stack');
-      final failure1 = Failure(error: 'error');
-      final failure2 = Failure(error: 'error');
+      const failure1 = Failure(error: 'error');
+      const failure2 = Failure(error: 'error');
       final failure3 = Failure(error: 'error', stackTrace: stackTrace);
       final failure4 = Failure(error: 'error', stackTrace: stackTrace);
 
@@ -21,8 +21,8 @@ void main() {
         'given a Failure, '
         'when compared with other different Failure, '
         'then the result is false', () {
-      final failure1 = Failure(error: 'error1');
-      final failure2 = Failure(error: 'error2');
+      const failure1 = Failure(error: 'error1');
+      const failure2 = Failure(error: 'error2');
       final failure3 = Failure(
         error: 'error',
         stackTrace: StackTrace.fromString('stack1'),
@@ -41,8 +41,8 @@ void main() {
         'when compared with other identical Failure, '
         'then the result is the same', () {
       final stackTrace = StackTrace.fromString('stack');
-      final failure1 = Failure(error: 'error');
-      final failure2 = Failure(error: 'error');
+      const failure1 = Failure(error: 'error');
+      const failure2 = Failure(error: 'error');
       final failure3 = Failure(error: 'error', stackTrace: stackTrace);
       final failure4 = Failure(error: 'error', stackTrace: stackTrace);
 
@@ -54,8 +54,8 @@ void main() {
         'given a hash code of the Failure, '
         'when compared with other different Failure, '
         'then the result is different', () {
-      final failure1 = Failure(error: 'error1');
-      final failure2 = Failure(error: 'error2');
+      const failure1 = Failure(error: 'error1');
+      const failure2 = Failure(error: 'error2');
       final failure3 = Failure(
         error: 'error',
         stackTrace: StackTrace.fromString('stack1'),
@@ -73,7 +73,7 @@ void main() {
         'given a Failure with error, '
         'when called toString, '
         'then the result is Failure(error: error, stackTrace: null)', () {
-      final failure = Failure(error: 'error');
+      const failure = Failure(error: 'error');
       expect(failure.toString(), 'Failure(error: error, stackTrace: null)');
     });
 
